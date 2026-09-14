@@ -1,13 +1,20 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 )
 
+type HealthResponse struct {
+	Status  string `json:"status"`
+	Service string `json:"service"`
+}
+
 func main() {
 	// Creating endpoint and calling handler
 	http.HandleFunc("/health", healthHandler)
+
 	// Make it easier to change port
 	fmt.Println("Server running on http://localhost:8080")
 
@@ -20,5 +27,12 @@ func main() {
 
 // Output shown in browser
 func healthHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "ok")
+	res := HealthResponse{
+		Status:  "OK",
+		Service: "transaction-service",
+	}
+
+	w.Header().Set("Content-type", "application/json")
+
+	json.NewEncoder(w).Encode(res)
 }
