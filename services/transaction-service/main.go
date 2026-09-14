@@ -34,7 +34,7 @@ func main() {
 	// Creating endpoint and calling handler
 	http.HandleFunc("/health", healthHandler)
 	http.HandleFunc("/hello", helloHandler)
-	http.HandleFunc("/transactions", createTransactionHandler)
+	http.HandleFunc("/transactions", transactionHandler)
 
 	// Make it easier to change port
 	fmt.Println("Server running on http://localhost:8080")
@@ -71,6 +71,22 @@ func helloHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-type", "application/json")
 
 	json.NewEncoder(w).Encode(res)
+}
+
+func transactionHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		getTransactionHandler(w, r)
+	case http.MethodPost:
+		createTransactionHandler(w, r)
+	default:
+		http.Error(w, "Invalid Method", http.StatusMethodNotAllowed)
+	}
+}
+
+func getTransactionHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(transactions)
 }
 
 func createTransactionHandler(w http.ResponseWriter, r *http.Request) {
